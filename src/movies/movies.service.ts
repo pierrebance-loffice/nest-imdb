@@ -11,8 +11,8 @@ export class MoviesService {
   private readonly language: string;
 
   constructor(
-    private configService: ConfigService,
-    private genresService: GenresService
+    private genresService: GenresService,
+    private configService: ConfigService
   ) {
     const apiKey = this.configService.get<string>("API_KEY");
     const baseUrl = this.configService.get<string>("API_BASE_URL");
@@ -55,7 +55,7 @@ export class MoviesService {
       return data as IMovie;
     } catch (error) {
       this.logger.error(`Failed to fetch movie: ${error.message}`);
-      throw new Error(`Failed to fetch movie: ${error.message}`);
+      throw error;
     }
   }
 
@@ -64,16 +64,16 @@ export class MoviesService {
     sorting: string = "popularity.desc"
   ): Promise<PaginatedApiDiscoveries> {
     try {
-      const query = [
-        `page=${page}`,
-        `sort_by=${sorting}`,
-        `language=${this.language}`,
-        `api_key=${this.apiKey}`,
-        `include_adult=false`,
-        `include_video=false`,
-      ];
+      const params = new URLSearchParams({
+        page: page.toString(),
+        sort_by: sorting,
+        include_adult: "false",
+        include_video: "false",
+        language: this.language,
+        api_key: this.apiKey,
+      });
 
-      const url = `${this.baseUrl}/discover/movie?${query.join("&")}`;
+      const url = `${this.baseUrl}/discover/movie?${params.toString()}`;
       this.logger.debug(`Fetching discoveries from URL: ${url}`);
 
       const response = await fetch(url);
@@ -96,7 +96,7 @@ export class MoviesService {
       };
     } catch (error) {
       this.logger.error(`Failed to fetch discoveries: ${error.message}`);
-      throw new Error(`Failed to fetch discoveries: ${error.message}`);
+      throw error;
     }
   }
 }
