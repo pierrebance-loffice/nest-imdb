@@ -1,102 +1,69 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { CACHE_MANAGER } from "@nestjs/cache-manager";
+import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { Cache } from "cache-manager";
+import { CACHE_KEYS, DEFAULT_PAGINATION } from "../common/constants";
+import { BaseService } from "../common/services/base.service";
+import { CustomLogger } from "../common/services/logger.service";
 import { GenresService } from "../genres/genres.service";
-import { IMovie, PaginatedApiDiscoveries } from "./entities/movie.entity";
+import { PaginatedMoviesResponseDto } from "./dto/movie-response.dto";
+import { IMovieDetails } from "./entities/movie.entity";
 
 @Injectable()
-export class MoviesService {
-  private readonly logger = new Logger(MoviesService.name);
-  private readonly apiKey: string;
-  private readonly baseUrl: string;
-  private readonly language: string;
-
+export class MoviesService extends BaseService {
   constructor(
     private genresService: GenresService,
-    private configService: ConfigService
+    configService: ConfigService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    logger: CustomLogger
   ) {
-    const apiKey = this.configService.get<string>("API_KEY");
-    const baseUrl = this.configService.get<string>("API_BASE_URL");
-    const language = this.configService.get<string>("API_LANGUAGE");
-
-    if (!apiKey || !baseUrl) {
-      throw new Error(
-        "API_KEY and API_BASE_URL must be defined in environment variables"
-      );
-    }
-
-    this.apiKey = apiKey;
-    this.baseUrl = baseUrl;
-    this.language = language;
+    super(configService, logger);
   }
 
-  async findAll() {
-    // TODO: Implement API call to get all movies
-    return [];
-  }
+  async findOne(id: string): Promise<IMovieDetails> {
+    const cacheKey = CACHE_KEYS.MOVIES.DETAILS(id);
+    const appendToResponse = ["keywords", "credits", "images", "videos"];
+    const url = `${this.baseUrl}/movie/${id}?language=${
+      this.language
+    }&api_key=${this.apiKey}&append_to_response=${appendToResponse.join(",")}`;
 
-  async findOne(id: string): Promise<IMovie> {
-    try {
-      const extra = ["keywords", "credits", "images", "keywords", "videos"];
-      const url = `${this.baseUrl}/movie/${id}?language=${
-        this.language
-      }&api_key=${this.apiKey}&append_to_response=${extra.join(",")}`;
-
-      this.logger.debug(`Fetching movie from URL: ${url}`);
-
-      const response = await fetch(url);
-      if (!response.ok) {
-        this.logger.error(`HTTP error! status: ${response.status}`);
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      this.logger.debug(`Received data: ${JSON.stringify(data)}`);
-
-      return data as IMovie;
-    } catch (error) {
-      this.logger.error(`Failed to fetch movie: ${error.message}`);
-      throw error;
-    }
+    return this.handleTmdbApiCall<IMovieDetails>(
+      url,
+      this.cacheManager,
+      cacheKey
+    );
   }
 
   async discover(
-    page: number = 1,
-    sorting: string = "popularity.desc"
-  ): Promise<PaginatedApiDiscoveries> {
-    try {
-      const params = new URLSearchParams({
-        page: page.toString(),
-        sort_by: sorting,
-        include_adult: "false",
-        include_video: "false",
-        language: this.language,
-        api_key: this.apiKey,
-      });
+    page: number = DEFAULT_PAGINATION.PAGE,
+    sort_by: string = DEFAULT_PAGINATION.SORT
+  ): Promise<PaginatedMoviesResponseDto> {
+    const cacheKey = CACHE_KEYS.MOVIES.DISCOVER(page, sort_by);
+    const params = new URLSearchParams({
+      page: page.toString(),
+      sort_by: sort_by,
+      include_adult: "false",
+      include_video: "false",
+      language: this.language,
+      api_key: this.apiKey,
+    });
 
-      const url = `${this.baseUrl}/discover/movie?${params.toString()}`;
-      this.logger.debug(`Fetching discoveries from URL: ${url}`);
+    const url = `${this.baseUrl}/discover/movie?${params.toString()}`;
+    const data = await this.handleTmdbApiCall<PaginatedMoviesResponseDto>(
+      url,
+      this.cacheManager,
+      cacheKey
+    );
 
-      const response = await fetch(url);
-      if (!response.ok) {
-        this.logger.error(`HTTP error! status: ${response.status}`);
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = (await response.json()) as PaginatedApiDiscoveries;
-      const genres = await this.genresService.findAll();
-
-      return {
-        ...data,
-        results: data.results.map((discovery) => ({
-          ...discovery,
-          genres: discovery.genre_ids
-            .map((id) => genres.find((genre) => genre.id === id))
-            .filter(Boolean),
-        })),
-      };
-    } catch (error) {
-      this.logger.error(`Failed to fetch discoveries: ${error.message}`);
-      throw error;
-    }
+    const genres = await this.genresService.findAll();
+    return {
+      ...data,
+      results: data.results.map((discovery) => ({
+        ...discovery,
+        genres: discovery.genre_ids
+          .map((id) => genres.find((genre) => genre.id === id))
+          .filter(Boolean),
+      })),
+    };
   }
 }

@@ -1,6 +1,8 @@
+export interface IGenre {
+  id: number;
+  name: string;
+}
+
 export interface IApiGenre {
-  genres: {
-    id: number;
-    name: string;
-  }[];
+  genres: IGenre[];
 }
