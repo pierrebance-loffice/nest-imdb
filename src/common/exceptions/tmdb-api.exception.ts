@@ -1,10 +1,10 @@
-import { HttpException, HttpStatus } from "@nestjs/common";
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 export class TmdbApiException extends HttpException {
   constructor(
     message: string,
     status: number = HttpStatus.INTERNAL_SERVER_ERROR,
-    public readonly tmdbErrorCode?: number
+    public readonly tmdbErrorCode?: number,
   ) {
     super(
       {
@@ -12,7 +12,7 @@ export class TmdbApiException extends HttpException {
         tmdbErrorCode,
         timestamp: new Date().toISOString(),
       },
-      status
+      status,
     );
   }
 
@@ -20,26 +20,26 @@ export class TmdbApiException extends HttpException {
     switch (status) {
       case 401:
         return new TmdbApiException(
-          "Invalid API key: You must be granted a valid key",
+          'Invalid API key: You must be granted a valid key',
           HttpStatus.UNAUTHORIZED,
-          7
+          7,
         );
       case 404:
         return new TmdbApiException(
-          "The resource you requested could not be found",
+          'The resource you requested could not be found',
           HttpStatus.NOT_FOUND,
-          34
+          34,
         );
       case 429:
         return new TmdbApiException(
-          "Too many requests: Your request count is over the allowed limit",
+          'Too many requests: Your request count is over the allowed limit',
           HttpStatus.TOO_MANY_REQUESTS,
-          25
+          25,
         );
       default:
         return new TmdbApiException(
-          "An error occurred while fetching data from TMDB API",
-          HttpStatus.INTERNAL_SERVER_ERROR
+          'An error occurred while fetching data from TMDB API',
+          HttpStatus.INTERNAL_SERVER_ERROR,
         );
     }
   }

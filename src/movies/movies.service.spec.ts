@@ -1,79 +1,79 @@
-import { CACHE_MANAGER } from "@nestjs/cache-manager";
-import { ConfigService } from "@nestjs/config";
-import { Test, TestingModule } from "@nestjs/testing";
-import { Cache } from "cache-manager";
-import { CustomLogger } from "../common/services/logger.service";
-import { IMovieDetails } from "./entities/movie.entity";
-import { MoviesService } from "./movies.service";
+import { CACHE_MANAGER, CacheModule } from '@nestjs/cache-manager';
+import { ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Cache } from 'cache-manager';
+import { CustomLogger } from '../common/services/logger.service';
+import { GenresService } from '../genres/genres.service';
+import { IMovieDetails } from './entities/movie.entity';
+import { MoviesService } from './movies.service';
 
-describe("MoviesService", () => {
+describe('MoviesService', () => {
   let service: MoviesService;
   let cacheManager: Cache;
-  let configService: ConfigService;
-  let logger: CustomLogger;
 
   const mockConfig = {
-    API_KEY: "test-api-key",
-    API_BASE_URL: "https://api.test.com",
-    API_LANGUAGE: "en-US",
+    API_KEY: 'test-api-key',
+    API_BASE_URL: 'https://api.test.com',
+    API_VERSION: '3',
+    API_LANGUAGE: 'en-US',
   };
 
   const mockMovieDetails: IMovieDetails = {
     id: 1,
-    title: "Test Movie",
-    overview: "Test overview",
-    poster_path: "/test.jpg",
-    backdrop_path: "/test-backdrop.jpg",
-    release_date: "2024-01-01",
+    title: 'Test Movie',
+    overview: 'Test overview',
+    poster_path: '/test.jpg',
+    backdrop_path: '/test-backdrop.jpg',
+    release_date: '2024-01-01',
     vote_average: 8.5,
     vote_count: 1000,
     genre_ids: [1, 2],
     genres: [
-      { id: 1, name: "Action" },
-      { id: 2, name: "Adventure" },
+      { id: 1, name: 'Action' },
+      { id: 2, name: 'Adventure' },
     ],
     belongs_to_collection: null,
     budget: 1000000,
-    homepage: "https://test.com",
-    imdb_id: "tt123456",
+    homepage: 'https://test.com',
+    imdb_id: 'tt123456',
     production_companies: [
       {
         id: 1,
-        logo_path: "/logo.jpg",
-        name: "Test Studio",
-        origin_country: "US",
+        logo_path: '/logo.jpg',
+        name: 'Test Studio',
+        origin_country: 'US',
       },
     ],
     production_countries: [
       {
-        iso_3166_1: "US",
-        name: "United States",
+        iso_3166_1: 'US',
+        name: 'United States',
       },
     ],
     revenue: 2000000,
     runtime: 120,
     spoken_languages: [
       {
-        english_name: "English",
-        iso_639_1: "en",
-        name: "English",
+        english_name: 'English',
+        iso_639_1: 'en',
+        name: 'English',
       },
     ],
-    status: "Released",
-    tagline: "Test tagline",
+    status: 'Released',
+    tagline: 'Test tagline',
     videos: {
       results: [
         {
-          id: "1",
-          iso_639_1: "en",
-          iso_3166_1: "US",
-          key: "test-key",
-          name: "Test Trailer",
+          id: '1',
+          iso_639_1: 'en',
+          iso_3166_1: 'US',
+          key: 'test-key',
+          name: 'Test Trailer',
           official: true,
-          published_at: "2024-01-01",
-          site: "YouTube",
+          published_at: '2024-01-01',
+          site: 'YouTube',
           size: 1080,
-          type: "Trailer",
+          type: 'Trailer',
         },
       ],
     },
@@ -83,14 +83,14 @@ describe("MoviesService", () => {
           adult: false,
           gender: 2,
           id: 1,
-          known_for_department: "Acting",
-          name: "Test Actor",
-          original_name: "Test Actor",
+          known_for_department: 'Acting',
+          name: 'Test Actor',
+          original_name: 'Test Actor',
           popularity: 100,
-          profile_path: "/actor.jpg",
+          profile_path: '/actor.jpg',
           cast_id: 1,
-          character: "Test Character",
-          credit_id: "1",
+          character: 'Test Character',
+          credit_id: '1',
           order: 0,
         },
       ],
@@ -99,14 +99,14 @@ describe("MoviesService", () => {
           adult: false,
           gender: 2,
           id: 2,
-          known_for_department: "Directing",
-          name: "Test Director",
-          original_name: "Test Director",
+          known_for_department: 'Directing',
+          name: 'Test Director',
+          original_name: 'Test Director',
           popularity: 100,
-          profile_path: "/director.jpg",
-          credit_id: "2",
-          department: "Directing",
-          job: "Director",
+          profile_path: '/director.jpg',
+          credit_id: '2',
+          department: 'Directing',
+          job: 'Director',
         },
       ],
     },
@@ -116,7 +116,7 @@ describe("MoviesService", () => {
           aspect_ratio: 1.78,
           height: 1080,
           iso_639_1: null,
-          file_path: "/backdrop.jpg",
+          file_path: '/backdrop.jpg',
           vote_average: 5.5,
           vote_count: 100,
           width: 1920,
@@ -127,7 +127,7 @@ describe("MoviesService", () => {
           aspect_ratio: 2.5,
           height: 200,
           iso_639_1: null,
-          file_path: "/logo.jpg",
+          file_path: '/logo.jpg',
           vote_average: 5.5,
           vote_count: 100,
           width: 500,
@@ -138,7 +138,7 @@ describe("MoviesService", () => {
           aspect_ratio: 0.667,
           height: 1500,
           iso_639_1: null,
-          file_path: "/poster.jpg",
+          file_path: '/poster.jpg',
           vote_average: 5.5,
           vote_count: 100,
           width: 1000,
@@ -149,7 +149,7 @@ describe("MoviesService", () => {
       keywords: [
         {
           id: 1,
-          name: "test",
+          name: 'test',
         },
       ],
     },
@@ -157,6 +157,7 @@ describe("MoviesService", () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CacheModule.register()],
       providers: [
         MoviesService,
         {
@@ -174,10 +175,12 @@ describe("MoviesService", () => {
           },
         },
         {
-          provide: CACHE_MANAGER,
+          provide: GenresService,
           useValue: {
-            get: jest.fn(),
-            set: jest.fn(),
+            findAll: jest.fn().mockResolvedValue([
+              { id: 1, name: 'Action' },
+              { id: 2, name: 'Adventure' },
+            ]),
           },
         },
       ],
@@ -185,29 +188,27 @@ describe("MoviesService", () => {
 
     service = module.get<MoviesService>(MoviesService);
     cacheManager = module.get<Cache>(CACHE_MANAGER);
-    configService = module.get<ConfigService>(ConfigService);
-    logger = module.get<CustomLogger>(CustomLogger);
   });
 
-  describe("findOne", () => {
-    const movieId = "123";
+  describe('findOne', () => {
+    const movieId = '123';
 
-    it("should return movie details from cache if available", async () => {
-      jest.spyOn(cacheManager, "get").mockResolvedValueOnce(mockMovieDetails);
+    it('should return movie details from cache if available', async () => {
+      jest.spyOn(cacheManager, 'get').mockResolvedValueOnce(mockMovieDetails);
 
       const result = await service.findOne(movieId);
 
       expect(result).toEqual(mockMovieDetails);
       expect(cacheManager.get).toHaveBeenCalledWith(
-        expect.stringContaining(`movies:details:${movieId}`)
+        expect.stringContaining(`movies:details:${movieId}`),
       );
     });
 
-    it("should fetch and cache movie details if not in cache", async () => {
-      jest.spyOn(cacheManager, "get").mockResolvedValueOnce(null);
-      jest.spyOn(cacheManager, "set").mockResolvedValueOnce(undefined);
+    it('should fetch and cache movie details if not in cache', async () => {
+      jest.spyOn(cacheManager, 'get').mockResolvedValueOnce(null);
+      jest.spyOn(cacheManager, 'set').mockResolvedValueOnce(undefined);
 
-      const mockFetch = jest.spyOn(global, "fetch").mockResolvedValueOnce({
+      const mockFetch = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve(mockMovieDetails),
       } as any);
@@ -217,18 +218,17 @@ describe("MoviesService", () => {
       expect(result).toEqual(mockMovieDetails);
       expect(mockFetch).toHaveBeenCalledWith(
         expect.stringContaining(mockConfig.API_BASE_URL),
-        expect.any(Object)
       );
       expect(cacheManager.set).toHaveBeenCalledWith(
         expect.stringContaining(`movies:details:${movieId}`),
-        mockMovieDetails
+        mockMovieDetails,
       );
     });
 
-    it("should throw error if movie not found", async () => {
-      jest.spyOn(cacheManager, "get").mockResolvedValueOnce(null);
+    it('should throw error if movie not found', async () => {
+      jest.spyOn(cacheManager, 'get').mockResolvedValueOnce(null);
 
-      const mockFetch = jest.spyOn(global, "fetch").mockResolvedValueOnce({
+      const mockFetch = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
         ok: false,
         status: 404,
       } as any);
@@ -238,11 +238,11 @@ describe("MoviesService", () => {
     });
   });
 
-  describe("discover", () => {
+  describe('discover', () => {
     const page = 1;
-    const sort = "popularity.desc";
+    const sort = 'popularity.desc';
 
-    it("should return discovered movies from cache if available", async () => {
+    it('should return discovered movies from cache if available', async () => {
       const mockResponse = {
         page: 1,
         results: [mockMovieDetails],
@@ -250,17 +250,17 @@ describe("MoviesService", () => {
         total_results: 1,
       };
 
-      jest.spyOn(cacheManager, "get").mockResolvedValueOnce(mockResponse);
+      jest.spyOn(cacheManager, 'get').mockResolvedValueOnce(mockResponse);
 
       const result = await service.discover(page, sort);
 
       expect(result).toEqual(mockResponse);
       expect(cacheManager.get).toHaveBeenCalledWith(
-        expect.stringContaining(`movies:discover:${page}:${sort}`)
+        expect.stringContaining(`movies:discover:${page}:${sort}`),
       );
     });
 
-    it("should fetch and cache discovered movies if not in cache", async () => {
+    it('should fetch and cache discovered movies if not in cache', async () => {
       const mockResponse = {
         page: 1,
         results: [mockMovieDetails],
@@ -268,10 +268,10 @@ describe("MoviesService", () => {
         total_results: 1,
       };
 
-      jest.spyOn(cacheManager, "get").mockResolvedValueOnce(null);
-      jest.spyOn(cacheManager, "set").mockResolvedValueOnce(undefined);
+      jest.spyOn(cacheManager, 'get').mockResolvedValueOnce(null);
+      jest.spyOn(cacheManager, 'set').mockResolvedValueOnce(undefined);
 
-      const mockFetch = jest.spyOn(global, "fetch").mockResolvedValueOnce({
+      const mockFetch = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve(mockResponse),
       } as any);
@@ -281,18 +281,17 @@ describe("MoviesService", () => {
       expect(result).toEqual(mockResponse);
       expect(mockFetch).toHaveBeenCalledWith(
         expect.stringContaining(mockConfig.API_BASE_URL),
-        expect.any(Object)
       );
       expect(cacheManager.set).toHaveBeenCalledWith(
         expect.stringContaining(`movies:discover:${page}:${sort}`),
-        mockResponse
+        mockResponse,
       );
     });
 
-    it("should throw error if discovery fails", async () => {
-      jest.spyOn(cacheManager, "get").mockResolvedValueOnce(null);
+    it('should throw error if discovery fails', async () => {
+      jest.spyOn(cacheManager, 'get').mockResolvedValueOnce(null);
 
-      const mockFetch = jest.spyOn(global, "fetch").mockResolvedValueOnce({
+      const mockFetch = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
         ok: false,
         status: 500,
       } as any);

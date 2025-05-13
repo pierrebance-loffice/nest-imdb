@@ -1,11 +1,11 @@
-import { ValidationPipe } from "@nestjs/common";
-import { NestFactory } from "@nestjs/core";
-import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import * as compression from "compression";
-import helmet from "helmet";
-import { AppModule } from "./app.module";
-import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
-import { CustomLogger } from "./common/services/logger.service";
+import { ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as compression from 'compression';
+import helmet from 'helmet';
+import { AppModule } from './app.module';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { CustomLogger } from './common/services/logger.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -14,8 +14,8 @@ async function bootstrap() {
 
   // Enable CORS with specific configuration
   app.enableCors({
-    origin: process.env.CORS_ORIGIN || "*",
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    origin: process.env.CORS_ORIGIN || '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
 
@@ -28,7 +28,7 @@ async function bootstrap() {
       transformOptions: {
         enableImplicitConversion: true,
       },
-    })
+    }),
   );
 
   // Enable global exception filter
@@ -42,25 +42,25 @@ async function bootstrap() {
 
   // Swagger documentation setup
   const config = new DocumentBuilder()
-    .setTitle("IMDB API")
-    .setDescription("The IMDB API description")
-    .setVersion("1.0")
+    .setTitle('IMDB API')
+    .setDescription('The IMDB API description')
+    .setVersion('1.0')
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup("api", app, document);
+  SwaggerModule.setup('api', app, document);
 
   // Set global prefix
-  app.setGlobalPrefix("api/v1");
+  app.setGlobalPrefix('api/v1');
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
 
   const logger = await app.resolve(CustomLogger);
-  logger.setContext("Bootstrap");
+  logger.setContext('Bootstrap');
   logger.log(`Application is running on: http://localhost:${port}`);
   logger.log(
-    `Swagger documentation is available at: http://localhost:${port}/api`
+    `Swagger documentation is available at: http://localhost:${port}/api`,
   );
 }
 bootstrap();

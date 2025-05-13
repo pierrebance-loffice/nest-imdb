@@ -1,5 +1,5 @@
-import { Injectable, LoggerService, Scope } from "@nestjs/common";
-import { createLogger, format, Logger, transports } from "winston";
+import { Injectable, LoggerService, Scope } from '@nestjs/common';
+import { createLogger, format, Logger, transports } from 'winston';
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class CustomLogger implements LoggerService {
@@ -24,11 +24,11 @@ export class CustomLogger implements LoggerService {
           ),
         }),
         new transports.File({
-          filename: "logs/error.log",
-          level: "error",
+          filename: 'logs/error.log',
+          level: 'error',
         }),
         new transports.File({
-          filename: "logs/combined.log",
+          filename: 'logs/combined.log',
         }),
       ],
     });

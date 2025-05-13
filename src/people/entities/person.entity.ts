@@ -1,4 +1,4 @@
-import { MovieCreditDto } from "./movie-credit.entity";
+import { MovieCreditDto } from './movie-credit.entity';
 
 export interface IPerson {
   id: number;

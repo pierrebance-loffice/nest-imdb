@@ -1,22 +1,22 @@
-import { CacheInterceptor, CacheKey, CacheTTL } from "@nestjs/cache-manager";
-import { Controller, Get, UseInterceptors } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { Throttle } from "@nestjs/throttler";
-import { CACHE_KEYS, RATE_LIMITS } from "../common/constants";
-import { GenreDto } from "./dto/genre-response.dto";
-import { GenresService } from "./genres.service";
+import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
+import { Controller, Get, UseInterceptors } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
+import { CACHE_KEYS, RATE_LIMITS } from '../common/constants';
+import { GenreDto } from './dto/genre-response.dto';
+import { GenresService } from './genres.service';
 
-@ApiTags("Genres")
-@Controller("genres")
+@ApiTags('Genres')
+@Controller('genres')
 @UseInterceptors(CacheInterceptor)
 export class GenresController {
   constructor(private readonly genresService: GenresService) {}
 
   @Get()
-  @ApiOperation({ summary: "Get all genres" })
+  @ApiOperation({ summary: 'Get all genres' })
   @ApiResponse({
     status: 200,
-    description: "Returns a list of all genres",
+    description: 'Returns a list of all genres',
     type: [GenreDto],
   })
   @CacheKey(CACHE_KEYS.GENRES.LIST)

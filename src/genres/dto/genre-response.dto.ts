@@ -1,11 +1,11 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IGenre } from "../entities/genre.entity";
+import { ApiProperty } from '@nestjs/swagger';
+import { IGenre } from '../entities/genre.entity';
 
 export class GenreDto implements IGenre {
-  @ApiProperty({ description: "Genre ID" })
+  @ApiProperty({ description: 'Genre ID' })
   id: number;
 
-  @ApiProperty({ description: "Genre name" })
+  @ApiProperty({ description: 'Genre name' })
   name: string;
 }
 

@@ -1,5 +1,5 @@
-import { plainToClass } from "class-transformer";
-import { IsNotEmpty, IsString, validateSync } from "class-validator";
+import { plainToClass } from 'class-transformer';
+import { IsNotEmpty, IsString, validateSync } from 'class-validator';
 
 class EnvironmentVariables {
   @IsString()
@@ -9,6 +9,10 @@ class EnvironmentVariables {
   @IsString()
   @IsNotEmpty()
   API_BASE_URL: string;
+
+  @IsString()
+  @IsNotEmpty()
+  API_VERSION: string;
 
   @IsString()
   @IsNotEmpty()

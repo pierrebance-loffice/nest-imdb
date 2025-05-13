@@ -1,10 +1,10 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsNumber, IsOptional, IsString, Min } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsNumber, IsOptional, IsString, Min } from 'class-validator';
 
 export class DiscoverMoviesDto {
   @ApiProperty({
-    description: "Page number for pagination",
+    description: 'Page number for pagination',
     required: false,
     default: 1,
     minimum: 1,
@@ -16,12 +16,12 @@ export class DiscoverMoviesDto {
   page?: number = 1;
 
   @ApiProperty({
-    description: "Sorting criteria",
+    description: 'Sorting criteria',
     required: false,
-    default: "popularity.desc",
-    example: "popularity.desc",
+    default: 'popularity.desc',
+    example: 'popularity.desc',
   })
   @IsOptional()
   @IsString()
-  sort_by?: string = "popularity.desc";
+  sort_by?: string = 'popularity.desc';
 }

@@ -8,7 +8,7 @@ export const CACHE_KEYS = {
     DETAILS: (id: string) => `people:details:${id}`,
   },
   GENRES: {
-    LIST: "genres:list",
+    LIST: 'genres:list',
   },
 } as const;
 
@@ -39,5 +39,5 @@ export const RATE_LIMITS = {
 
 export const DEFAULT_PAGINATION = {
   PAGE: 1,
-  SORT: "popularity.desc",
+  SORT: 'popularity.desc',
 } as const;
